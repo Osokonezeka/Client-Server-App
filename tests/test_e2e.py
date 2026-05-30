@@ -45,11 +45,14 @@ def running_server():
     Fixture to start the background server, clear the port beforehand,
     and log its output to a file.
     """
+    # Ensure the port is free before starting the server to avoid 'Address already in use' errors.
     force_free_port(PORT)
 
     server_script = src_path / "server.py"
     log_file_path = Path(__file__).parent / "server_e2e.log"
 
+    # Start the server as a separate process and redirect its stdout/stderr to a log file.
+    # This allows us to debug server issues if the E2E tests fail.
     with open(log_file_path, "w") as log_file:
         process = subprocess.Popen(
             [sys.executable, str(server_script)],
@@ -57,6 +60,8 @@ def running_server():
             stderr=subprocess.STDOUT
         )
 
+        # Actively poll the server port instead of using a hardcoded sleep.
+        # This makes the tests faster and more reliable.
         start_time = time.time()
         while not is_port_open(HOST, PORT):
             if time.time() - start_time > 5:
@@ -65,6 +70,7 @@ def running_server():
 
         yield process
 
+        # Ensure the server process is terminated after all tests in the module finish.
         process.terminate()
         process.wait()
 
@@ -77,10 +83,12 @@ class TestEndToEnd:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.settimeout(5.0)
             
+            # Simulate the initial handshake.
             s.connect((HOST, PORT))
             s.sendall(b"1111")
             status = s.recv(1024).decode('utf-8')
             
+            # Simulate requesting a specific class of objects.
             s.sendall(b"User")
             data = s.recv(65536)
             
@@ -88,6 +96,8 @@ class TestEndToEnd:
             assert data is not None
             assert len(data) > 0
             
+            # Deserialize the received byte stream and verify the object structure.
+            # This confirms that the entire serialization/deserialization pipeline works over the network.
             collection = pickle.loads(data)
             assert isinstance(collection, list)
             assert len(collection) > 0
@@ -98,6 +108,7 @@ class TestEndToEnd:
         active_sockets = []
 
         try:
+            # Exhaust the server's connection pool by connecting up to MAX_CLIENTS.
             for i in range(MAX_CLIENTS):
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 s.settimeout(5.0)
@@ -108,6 +119,7 @@ class TestEndToEnd:
                 assert status == "OK", f"Expected OK, got {status} for client {i}"
                 active_sockets.append(s)
 
+            # Attempt to connect one more client beyond the limit.
             s_refused = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s_refused.settimeout(5.0)
             s_refused.connect((HOST, PORT))
@@ -115,10 +127,12 @@ class TestEndToEnd:
 
             status_refused = s_refused.recv(1024).decode('utf-8')
             
+            # Verify the server correctly refuses the connection.
             assert status_refused == "REFUSED", f"Expected REFUSED, got {status_refused}"
 
             s_refused.close()
 
         finally:
+            # Clean up all active sockets to avoid resource leaks.
             for s in active_sockets:
                 s.close()
