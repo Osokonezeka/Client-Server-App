@@ -46,7 +46,7 @@ The project includes unit, integration, and E2E tests. To run all tests (using t
 During the development of this project, Artificial Intelligence tools were used to support the creative process and ensure code quality.
 
 ### Tools and Models Used
-* **Google Gemini 2.5 Pro** – assistance in planning the project architecture, generating code skeletons, and refactoring.
+* **Google Gemini 2.5 Pro** – assistance in planning the project architecture and preparing the file structure.
 
 ### Scope of AI Usage in the Project
 * Planning the file structure and logical division of the application.
