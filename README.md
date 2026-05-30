@@ -58,5 +58,5 @@ During the development of this project, Artificial Intelligence tools were used 
 The following are actual prompts used in communication with the AI model during the development process:
 1. **Architecture Planning:** *"Hello, please review this file and think about a blueprint of how this project should look like. Do not generate files, just give me your vision of this project."*
 2. **Documentation Generation:** *"Based on all the project files and the provided PDF requirements, generate the README.md file."*
-3. **Refactoring & Code Review:** *"What do you think about this file? [pasted client code with for-loop modifications]"*
+3. **Refactoring & Code Review:** *"What do you think about this file? [pasted code]"*
 4. **Git Operations Support:** *"Give me a short GitHub commit message, including the branch name and description."*
