@@ -33,7 +33,6 @@ The project includes unit, integration, and E2E tests. [cite_start]To run all te
 
 ## 2. Artificial Intelligence (AI) Usage Declaration
 
-[cite_start]During the development of this project, Artificial Intelligence tools were used to support the creative process[cite: 44].
 
 ### [cite_start]Tools and Models Used [cite: 46]
 * **Google Gemini** – assistance in planning the project architecture and preparing the file structure.
