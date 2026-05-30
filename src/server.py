@@ -33,10 +33,11 @@ def initialize_data():
         logging.info(f"  -> Created: {key}: {val}")
 
 
-def handle_client(conn: socket.socket, addr):
+def handle_client(conn: socket.socket):
     """
     Handles a single client connection in a dedicated thread.
     """
+    conn.settimeout(15.0)
     global active_clients
     client_id = "UNKNOWN"
     accepted = False
@@ -78,7 +79,8 @@ def handle_client(conn: socket.socket, addr):
 
             serialized_data = pickle.dumps(collection_to_send)
             conn.sendall(serialized_data)
-            logging.info(f"Sent collection of {len(collection_to_send)} objects to Client {client_id}.")
+            objects_str = ", ".join([str(obj) for obj in collection_to_send])
+            logging.info(f"Sent objects: [{objects_str}] to Client {client_id}.")
 
     except ConnectionResetError:
         logging.warning(f"Client {client_id} forcibly closed the connection.")

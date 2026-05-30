@@ -64,8 +64,8 @@ def run_client():
                 logging.info(f"\n[Client {client_id}] --> Requesting a collection of objects of class: {class_name}")
                 client_socket.sendall(class_name.encode('utf-8'))
 
-                data = client_socket.recv(4096)
-
+                data = client_socket.recv(65536)
+                
                 if not data:
                     logging.warning(f"[Client {client_id}] The server terminated the connection unexpectedly.")
                     break
