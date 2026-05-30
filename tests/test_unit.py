@@ -1,6 +1,8 @@
 import sys
 from pathlib import Path
 
+# Dynamic path injection to allow importing from the 'src' directory
+# without requiring the package to be installed globally.
 src_path = Path(__file__).parent.parent / "src"
 sys.path.insert(0, str(src_path.resolve()))
 
@@ -37,11 +39,14 @@ class TestUser:
         user_diff_id = User(2, "johndoe")
         user_diff_name = User(1, "janedoe")
 
+        # Verify that objects with identical data are considered equal.
         assert user_base == user_same
 
+        # Verify that differing on any single field results in inequality.
         assert user_base != user_diff_id
         assert user_base != user_diff_name
 
+        # Verify type safety during comparison (comparing User with String/None).
         assert user_base != "not_a_user_object"
         assert not (user_base == None)
 
@@ -79,12 +84,15 @@ class TestProduct:
         prod_diff_name = Product(10, "Keyboard", 49.50)
         prod_diff_price = Product(10, "Mouse", 120.00)
 
+        # Verify equality logic.
         assert prod_base == prod_same
 
+        # Verify inequality logic for every distinct field.
         assert prod_base != prod_diff_id
         assert prod_base != prod_diff_name
         assert prod_base != prod_diff_price
 
+        # Verify type safety.
         assert prod_base != 49.50
         assert not (prod_base == None)
 
@@ -122,11 +130,14 @@ class TestOrder:
         order_diff_item = Order(1, "Chair", 1)
         order_diff_qty = Order(1, "Desk", 4)
 
+        # Verify equality logic.
         assert order_base == order_same
 
+        # Verify inequality logic for every distinct field.
         assert order_base != order_diff_id
         assert order_base != order_diff_item
         assert order_base != order_diff_qty
 
+        # Verify type safety.
         assert order_base != "not_an_order_object"
         assert not (order_base == None)

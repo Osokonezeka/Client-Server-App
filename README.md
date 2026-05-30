@@ -53,10 +53,13 @@ During the development of this project, Artificial Intelligence tools were used 
 * Generating the initial skeleton of the multithreaded server and client logic.
 * Reviewing code (e.g., transitioning from standard `print` statements to the Python `logging` module).
 * Formulating proper Git commit messages based on Conventional Commits standards.
+* Generating detailed, English comments describing the core mechanisms of the code across all source and test files.
+* Refactoring and improving test reliability (e.g., translating comments, introducing AAA structure, and stabilizing E2E server execution).
 
 ### Sample Prompts and Configuration Parameters
 The following are actual prompts used in communication with the AI model during the development process:
 1. **Architecture Planning:** *"Hello, please review this file and think about a blueprint of how this project should look like. Do not generate files, just give me your vision of this project."*
 2. **Documentation Generation:** *"Based on all the project files and the provided PDF requirements, generate the README.md file."*
 3. **Refactoring & Code Review:** *"What do you think about this file? [pasted code]"*
-4. **Git Operations Support:** *"Give me a short GitHub commit message, including the branch name and description."*
+4. **Commenting:** *"Review all files again and add comments describing the code."*
+5. **Git Operations Support:** *"Give me a short GitHub commit message, including the branch name and description."*

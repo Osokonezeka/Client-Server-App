@@ -25,6 +25,8 @@ def initialize_data():
     """
     logging.info("Initializing data map...")
     for i in range(1, 5):
+        # Store objects in a map (dictionary) with keys like 'User_1', 'Product_2'.
+        # This fulfills the specific project requirement for data storage on the server.
         object_map[f"User_{i}"] = User(i, f"Username_{i}")
         object_map[f"Product_{i}"] = Product(100 + i, f"Product_Name_{i}", i * 15.50)
         object_map[f"Order_{i}"] = Order(1000 + i, f"Item_Name_{i}", i * 2)
@@ -48,6 +50,8 @@ def handle_client(conn: socket.socket, addr):
             return
         client_id = data.decode('utf-8')
 
+        # Thread-safe check and update of the active client counter.
+        # The 'clients_lock' prevents race conditions when multiple threads try to connect simultaneously.
         with clients_lock:
             if active_clients >= MAX_CLIENTS:
                 logging.warning(f"Connection from Client {client_id} REFUSED (MAX_CLIENTS={MAX_CLIENTS} reached).")
@@ -69,16 +73,21 @@ def handle_client(conn: socket.socket, addr):
 
             time.sleep(random.uniform(0.5, 1.5))
 
+            # Extract only the objects requested by the client.
             collection_to_send = [
                 obj for key, obj in object_map.items() if key.startswith(f"{requested_class}_")
             ]
 
+            # Intentional error injection mechanism.
+            # If the requested class doesn't exist, we send a wrong object type to trigger a TypeError on the client.
             if not collection_to_send:
                 logging.warning(f"Class '{requested_class}' not found. Sending a deliberate error object.")
                 collection_to_send = [User(999, "Error_Trigger_User")]
 
+            # Serialize the collection using pickle before sending over the network.
             serialized_data = pickle.dumps(collection_to_send)
             conn.sendall(serialized_data)
+            
             objects_str = ", ".join([str(obj) for obj in collection_to_send])
             logging.info(f"Sent objects: [{objects_str}] to Client {client_id}.")
 
@@ -89,6 +98,7 @@ def handle_client(conn: socket.socket, addr):
 
     finally:
         if accepted:
+            # Thread-safe decrement of the counter when a client disconnects.
             with clients_lock:
                 active_clients -= 1
             logging.info(f"Client {client_id} disconnected. Active clients: {active_clients}")
@@ -102,6 +112,8 @@ def run_server():
     initialize_data()
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
+        # SO_REUSEADDR allows the server to quickly restart and bind to the same port
+        # even if previous connections are in TIME_WAIT state.
         server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         server_socket.bind((HOST, PORT))
         server_socket.listen()
@@ -111,6 +123,8 @@ def run_server():
 
         while True:
             conn, addr = server_socket.accept()
+            # Spawning a new daemon thread for each accepted client.
+            # Daemon threads will automatically exit when the main program finishes.
             thread = threading.Thread(target=handle_client, args=(conn, addr), name=f"Client-{addr[1]}", daemon=True)
             thread.start()
 
