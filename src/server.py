@@ -33,7 +33,7 @@ def initialize_data():
         logging.info(f"  -> Created: {key}: {val}")
 
 
-def handle_client(conn: socket.socket):
+def handle_client(conn: socket.socket, addr):
     """
     Handles a single client connection in a dedicated thread.
     """
